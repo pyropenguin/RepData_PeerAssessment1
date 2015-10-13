@@ -7,7 +7,8 @@ output:
 
 
 ## Loading and preprocessing the data
-```{r}
+
+```r
 library(data.table) # Use the data.table package for speed
 library(ggplot2) # Use ggplot2 for pretty graphs
 library(tidyr)
@@ -32,7 +33,8 @@ if (!file.exists('activity.RData'))
 ```
 
 ## What is mean total number of steps taken per day?
-```{r}
+
+```r
 # Summarize activity into steps per day
 stepsPerDay <- activity[,list(steps=sum(steps,na.rm=TRUE)),by=date]
 setkey(stepsPerDay, date)
@@ -42,12 +44,15 @@ g <- g + labs(title='Frequency of Total Number of Steps per Day', x='Steps', y='
 g
 ```
 
-Mean: `r mean(stepsPerDay$steps,na.rm=TRUE)` steps per day
+![plot of chunk unnamed-chunk-2](figure/unnamed-chunk-2-1.png) 
 
-Median: `r median(stepsPerDay$steps,na.rm=TRUE)` steps per day
+Mean: 9354.2295082 steps per day
+
+Median: 10395 steps per day
 
 ## What is the average daily activity pattern?
-```{r}
+
+```r
 # Summarize activity into steps per interval
 stepsPerInterval <- activity[,list(steps=mean(steps,na.rm=TRUE)),
                              by=list(interval)]
@@ -57,12 +62,15 @@ g <- g + labs(title='Average Steps by 5-minute Interval', x='Interval', y='Steps
 g
 ```
 
-Interval with maximum number of steps: `r stepsPerInterval$interval[stepsPerInterval$steps == max(stepsPerInterval$steps)]` (`r max(stepsPerInterval$steps)` steps)
+![plot of chunk unnamed-chunk-3](figure/unnamed-chunk-3-1.png) 
+
+Interval with maximum number of steps: 835 (206.1698113 steps)
 
 ## Imputing missing values
-Number of missing values in the dataset: `r sum(is.na(activity$steps))`
+Number of missing values in the dataset: 2304
 
-```{r}
+
+```r
 # Impute missing steps by interval using the average number of steps for each interval
 activityImp <- activity
 for (interval in stepsPerInterval$interval)
@@ -82,12 +90,15 @@ g <- g + labs(title='Frequency of Total Number of Steps per Day using imputed av
 g
 ```
 
-Imputed Mean: `r mean(stepsPerDayImp$steps)` steps per day ( `r mean(stepsPerDayImp$steps) - mean(stepsPerDay$steps,na.rm=TRUE)` more steps than non-imputed)
+![plot of chunk unnamed-chunk-4](figure/unnamed-chunk-4-1.png) 
 
-Imputed Median: `r median(stepsPerDayImp$steps)` steps per day ( `r median(stepsPerDayImp$steps) - median(stepsPerDay$steps,na.rm=TRUE)` more steps than non-imputed)
+Imputed Mean: 1.0766189 &times; 10<sup>4</sup> steps per day ( 1411.959171 more steps than non-imputed)
+
+Imputed Median: 1.0766189 &times; 10<sup>4</sup> steps per day ( 371.1886792 more steps than non-imputed)
 
 ## Are there differences in activity patterns between weekdays and weekends?
-```{r}
+
+```r
 # Determine which days are weekdays and which are weekends
 activityImp$day <- weekdays(activityImp$date)
 activityImp$weekday <- 'Weekday'
@@ -104,3 +115,5 @@ g <- g + facet_grid(weekday ~ .)
 g <- g + labs(title='Average Steps by 5-minute Interval, using imputed averages for NA values', x='Interval', y='Steps')
 g
 ```
+
+![plot of chunk unnamed-chunk-5](figure/unnamed-chunk-5-1.png) 
